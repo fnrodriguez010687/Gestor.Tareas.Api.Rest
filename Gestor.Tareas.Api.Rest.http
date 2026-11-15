@@ -1,0 +1,6 @@
+@Gestor.Tareas.Api.Rest_HostAddress = http://localhost:5123
+
+GET {{Gestor.Tareas.Api.Rest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
