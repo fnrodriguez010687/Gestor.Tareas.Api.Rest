@@ -1,7 +1,7 @@
-using Gestor.Tareas.Api.Rest.Models;
+using Gestor.Tareas.Api.Rest.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Gestor.Tareas.Api.Rest.Data;
+namespace Gestor.Tareas.Api.Rest.Infrastructure.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {

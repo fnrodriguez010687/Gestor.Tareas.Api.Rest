@@ -1,4 +1,6 @@
-namespace Gestor.Tareas.Api.Rest.Models;
+using Gestor.Tareas.Api.Rest.Domain.Enums;
+
+namespace Gestor.Tareas.Api.Rest.Domain.Entities;
 
 public class TaskItem
 {
@@ -8,7 +10,7 @@ public class TaskItem
 
     public string? Description { get; set; }
 
-    public TaskStatus Status { get; set; } = TaskStatus.Pendiente;
+    public TaskState Status { get; set; } = TaskState.Pendiente;
 
     public string Assignee { get; set; } = string.Empty;
 

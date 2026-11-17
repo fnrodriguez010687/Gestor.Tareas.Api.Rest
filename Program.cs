@@ -1,5 +1,6 @@
-using Gestor.Tareas.Api.Rest.Data;
-using Gestor.Tareas.Api.Rest.Models;
+using Gestor.Tareas.Api.Rest.API.Endpoints;
+using Gestor.Tareas.Api.Rest.Application.Tasks;
+using Gestor.Tareas.Api.Rest.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 
@@ -30,41 +34,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/api/tasks", async (AppDbContext dbContext, int page = 1, int pageSize = 20) =>
-{
-    if (page < 1 || pageSize < 1 || pageSize > 100)
-    {
-        return Results.BadRequest(new
-        {
-            message = "Page must be at least 1 and pageSize must be between 1 and 100."
-        });
-    }
-
-    var tasks = dbContext.Tasks.AsNoTracking();
-    var totalCount = await tasks.CountAsync();
-    var skipCount = ((long)page - 1) * pageSize;
-    IReadOnlyList<TaskItem> items = skipCount >= totalCount
-        ? Array.Empty<TaskItem>()
-        : await tasks
-            .OrderBy(task => task.Id)
-            .Skip((int)skipCount)
-            .Take(pageSize)
-            .ToListAsync();
-
-    return Results.Ok(new PagedResponse<TaskItem>(
-        items,
-        page,
-        pageSize,
-        totalCount,
-        (int)Math.Ceiling(totalCount / (double)pageSize)));
-})
-.WithName("GetTasks");
+app.MapTaskEndpoints();
 
 app.Run();
-
-public sealed record PagedResponse<T>(
-    IReadOnlyList<T> Items,
-    int Page,
-    int PageSize,
-    int TotalCount,
-    int TotalPages);
