@@ -1,6 +1,6 @@
 @Gestor.Tareas.Api.Rest_HostAddress = http://localhost:5123
 
-GET {{Gestor.Tareas.Api.Rest_HostAddress}}/weatherforecast/
+GET {{Gestor.Tareas.Api.Rest_HostAddress}}/api/tasks?page=1&pageSize=20
 Accept: application/json
 
 ###

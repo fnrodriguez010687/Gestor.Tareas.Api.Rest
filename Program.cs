@@ -1,4 +1,5 @@
 using Gestor.Tareas.Api.Rest.Data;
+using Gestor.Tareas.Api.Rest.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,28 +30,41 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/api/tasks", async (AppDbContext dbContext, int page = 1, int pageSize = 20) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    if (page < 1 || pageSize < 1 || pageSize > 100)
+    {
+        return Results.BadRequest(new
+        {
+            message = "Page must be at least 1 and pageSize must be between 1 and 100."
+        });
+    }
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    var tasks = dbContext.Tasks.AsNoTracking();
+    var totalCount = await tasks.CountAsync();
+    var skipCount = ((long)page - 1) * pageSize;
+    IReadOnlyList<TaskItem> items = skipCount >= totalCount
+        ? Array.Empty<TaskItem>()
+        : await tasks
+            .OrderBy(task => task.Id)
+            .Skip((int)skipCount)
+            .Take(pageSize)
+            .ToListAsync();
+
+    return Results.Ok(new PagedResponse<TaskItem>(
+        items,
+        page,
+        pageSize,
+        totalCount,
+        (int)Math.Ceiling(totalCount / (double)pageSize)));
 })
-.WithName("GetWeatherForecast");
+.WithName("GetTasks");
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public sealed record PagedResponse<T>(
+    IReadOnlyList<T> Items,
+    int Page,
+    int PageSize,
+    int TotalCount,
+    int TotalPages);
