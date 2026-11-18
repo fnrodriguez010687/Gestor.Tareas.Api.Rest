@@ -14,7 +14,7 @@ public static class TaskEndpoints
             ITaskService taskService,
             int page = 1,
             int pageSize = 20,
-            string? status = null,
+            int? status = null,
             string? assignee = null,
             CancellationToken cancellationToken = default) =>
         {
@@ -27,14 +27,14 @@ public static class TaskEndpoints
             }
 
             TaskState? taskStatus = null;
-            if (!string.IsNullOrWhiteSpace(status))
+            if (status.HasValue)
             {
-                if (!Enum.TryParse<TaskState>(status, ignoreCase: true, out var parsedStatus) ||
-                    !Enum.IsDefined(parsedStatus))
+                var parsedStatus = (TaskState)status.Value;
+                if (!Enum.IsDefined(parsedStatus))
                 {
                     return Results.BadRequest(new
                     {
-                        message = "Status must be Pendiente, EnCurso or Hecha."
+                        message = "Status must be 1 (Pendiente), 2 (EnCurso) or 3 (Hecha)."
                     });
                 }
 

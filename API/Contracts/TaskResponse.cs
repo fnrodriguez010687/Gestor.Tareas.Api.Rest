@@ -8,6 +8,7 @@ public sealed record TaskResponse(
     string Title,
     string? Description,
     TaskState Status,
+    string StatusName,
     string Assignee,
     DateOnly DueDate)
 {
@@ -16,6 +17,7 @@ public sealed record TaskResponse(
         task.Title,
         task.Description,
         task.Status,
+        task.Status.ToString(),
         task.Assignee,
         task.DueDate);
 }

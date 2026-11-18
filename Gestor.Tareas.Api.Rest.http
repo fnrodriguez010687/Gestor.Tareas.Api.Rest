@@ -5,12 +5,12 @@ Accept: application/json
 
 ###
 
-GET {{Gestor.Tareas.Api.Rest_HostAddress}}/api/tasks?status=Pendiente&assignee=Alex&page=1&pageSize=20
+GET {{Gestor.Tareas.Api.Rest_HostAddress}}/api/tasks?status=1&assignee=Alex&page=1&pageSize=20
 Accept: application/json
 
 ###
 
-GET {{Gestor.Tareas.Api.Rest_HostAddress}}/api/tasks?status=Invalido
+GET {{Gestor.Tareas.Api.Rest_HostAddress}}/api/tasks?status=99
 Accept: application/json
 
 ###
@@ -26,7 +26,7 @@ Content-Type: application/json
 {
 	"title": "Preparar entrega",
 	"description": "Completar la API de tareas",
-	"status": "Pendiente",
+	"status": 1,
 	"assignee": "Alex",
 	"dueDate": "2026-12-01"
 }
@@ -39,7 +39,7 @@ Content-Type: application/json
 {
 	"title": "Preparar entrega",
 	"description": "Revisar y completar la API de tareas",
-	"status": "EnCurso",
+	"status": 2,
 	"assignee": "Alex",
 	"dueDate": "2026-12-01"
 }

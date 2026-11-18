@@ -14,7 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         task.HasKey(item => item.Id);
         task.Property(item => item.Title).HasMaxLength(200).IsRequired();
         task.Property(item => item.Description).HasMaxLength(2000);
-        task.Property(item => item.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
+        task.Property(item => item.Status).IsRequired();
         task.Property(item => item.Assignee).HasMaxLength(120).IsRequired();
         task.Property(item => item.DueDate).IsRequired();
     }
