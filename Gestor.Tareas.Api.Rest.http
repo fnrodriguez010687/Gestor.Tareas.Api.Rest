@@ -5,6 +5,16 @@ Accept: application/json
 
 ###
 
+GET {{Gestor.Tareas.Api.Rest_HostAddress}}/api/tasks?status=Pendiente&assignee=Alex&page=1&pageSize=20
+Accept: application/json
+
+###
+
+GET {{Gestor.Tareas.Api.Rest_HostAddress}}/api/tasks?status=Invalido
+Accept: application/json
+
+###
+
 GET {{Gestor.Tareas.Api.Rest_HostAddress}}/api/tasks/1
 Accept: application/json
 

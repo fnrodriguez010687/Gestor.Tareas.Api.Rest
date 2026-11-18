@@ -1,5 +1,6 @@
 using Gestor.Tareas.Api.Rest.Application.Tasks;
 using Gestor.Tareas.Api.Rest.Domain.Entities;
+using Gestor.Tareas.Api.Rest.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gestor.Tareas.Api.Rest.Infrastructure.Data;
@@ -9,9 +10,23 @@ public sealed class TaskRepository(AppDbContext dbContext) : ITaskRepository
     public async Task<(IReadOnlyList<TaskItem> Items, int TotalCount)> GetPageAsync(
         int page,
         int pageSize,
+        TaskState? status,
+        string? assignee,
         CancellationToken cancellationToken = default)
     {
         var query = dbContext.Tasks.AsNoTracking();
+
+        if (status.HasValue)
+        {
+            query = query.Where(task => task.Status == status.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(assignee))
+        {
+            var normalizedAssignee = assignee.Trim();
+            query = query.Where(task => task.Assignee == normalizedAssignee);
+        }
+
         var totalCount = await query.CountAsync(cancellationToken);
         var skipCount = ((long)page - 1) * pageSize;
         IReadOnlyList<TaskItem> items = skipCount >= totalCount

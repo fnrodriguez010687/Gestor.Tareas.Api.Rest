@@ -1,5 +1,6 @@
 using Gestor.Tareas.Api.Rest.Application.Models;
 using Gestor.Tareas.Api.Rest.Domain.Entities;
+using Gestor.Tareas.Api.Rest.Domain.Enums;
 
 namespace Gestor.Tareas.Api.Rest.Application.Tasks;
 
@@ -8,6 +9,8 @@ public interface ITaskService
     Task<PagedResult<TaskItem>> GetPageAsync(
         int page,
         int pageSize,
+        TaskState? status,
+        string? assignee,
         CancellationToken cancellationToken = default);
 
     Task<TaskItem?> GetByIdAsync(int id, CancellationToken cancellationToken = default);

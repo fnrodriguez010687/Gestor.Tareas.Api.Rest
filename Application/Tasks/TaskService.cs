@@ -9,9 +9,17 @@ public sealed class TaskService(ITaskRepository taskRepository, IUnitOfWork unit
     public async Task<PagedResult<TaskItem>> GetPageAsync(
         int page,
         int pageSize,
+        TaskState? status,
+        string? assignee,
         CancellationToken cancellationToken = default)
     {
-        var (items, totalCount) = await taskRepository.GetPageAsync(page, pageSize, cancellationToken);
+        var (items, totalCount) = await taskRepository.GetPageAsync(
+            page,
+            pageSize,
+            status,
+            assignee,
+            cancellationToken);
+
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
         return new PagedResult<TaskItem>(items, page, pageSize, totalCount, totalPages);

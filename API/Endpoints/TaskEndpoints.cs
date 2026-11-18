@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Gestor.Tareas.Api.Rest.API.Contracts;
 using Gestor.Tareas.Api.Rest.Application.Tasks;
 using Gestor.Tareas.Api.Rest.Domain.Entities;
+using Gestor.Tareas.Api.Rest.Domain.Enums;
 
 namespace Gestor.Tareas.Api.Rest.API.Endpoints;
 
@@ -13,6 +14,8 @@ public static class TaskEndpoints
             ITaskService taskService,
             int page = 1,
             int pageSize = 20,
+            string? status = null,
+            string? assignee = null,
             CancellationToken cancellationToken = default) =>
         {
             if (page < 1 || pageSize < 1 || pageSize > 100)
@@ -23,7 +26,28 @@ public static class TaskEndpoints
                 });
             }
 
-            var result = await taskService.GetPageAsync(page, pageSize, cancellationToken);
+            TaskState? taskStatus = null;
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                if (!Enum.TryParse<TaskState>(status, ignoreCase: true, out var parsedStatus) ||
+                    !Enum.IsDefined(parsedStatus))
+                {
+                    return Results.BadRequest(new
+                    {
+                        message = "Status must be Pendiente, EnCurso or Hecha."
+                    });
+                }
+
+                taskStatus = parsedStatus;
+            }
+
+            var result = await taskService.GetPageAsync(
+                page,
+                pageSize,
+                taskStatus,
+                assignee,
+                cancellationToken);
+
             var response = new PagedResponse<TaskResponse>(
                 result.Items.Select(TaskResponse.FromEntity).ToArray(),
                 result.Page,
