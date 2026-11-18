@@ -31,5 +31,7 @@ public sealed class TaskRepository(AppDbContext dbContext) : ITaskRepository
     public async Task AddAsync(TaskItem task, CancellationToken cancellationToken = default) =>
         await dbContext.Tasks.AddAsync(task, cancellationToken);
 
+    public void Update(TaskItem task) => dbContext.Tasks.Update(task);
+
     public void Remove(TaskItem task) => dbContext.Tasks.Remove(task);
 }

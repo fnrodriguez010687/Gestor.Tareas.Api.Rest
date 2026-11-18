@@ -13,5 +13,7 @@ public interface ITaskRepository
 
     Task AddAsync(TaskItem task, CancellationToken cancellationToken = default);
 
+    void Update(TaskItem task);
+
     void Remove(TaskItem task);
 }
